@@ -29,59 +29,33 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nunito"
                 android:paddingBottom="8dp"
-                android:text="Create Reminder"
+                android:text="Delete Reminder"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="heading" />
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/medicineName"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/inputfield"
-                android:ems="10"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 android:fontFamily="@font/nunito"
-                android:hint="Name of Medicine"
-                android:inputType="text"
+                android:text="Are you sure you want to delete this reminder?"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/heading" />
 
-            <EditText
-                android:id="@+id/dosesInADay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_marginTop="1dp"
-                android:background="@drawable/inputfield"
-                android:ems="10"
-                android:fontFamily="@font/nunito"
-                android:hint="Doses in a day"
-                android:inputType="number"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/medicineName" />
-
-            <EditText
-                android:id="@+id/numberOfDays"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/inputfield"
-                android:ems="10"
-                android:fontFamily="@font/nunito"
-                android:hint="Number of days"
-                android:inputType="number"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dosesInADay" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
@@ -110,7 +84,7 @@
                 android:fontFamily="@font/nunito"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                android:text="Cancel"
+                android:text="NO"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +92,7 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <Button
-                android:id="@+id/dialogSubmit"
+                android:id="@+id/confirmDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -126,7 +100,7 @@
                 android:fontFamily="@font/nunito"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                android:text="Create"
+                android:text="YES"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

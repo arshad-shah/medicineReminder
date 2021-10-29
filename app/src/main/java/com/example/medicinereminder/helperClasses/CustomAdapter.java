@@ -23,8 +23,6 @@ import java.util.ArrayList;
 
 public class CustomAdapter extends ArrayAdapter<MedicineReminder> {
     ArrayList<MedicineReminder> MedicineReminder;
-    //adapter for the database
-    databaseAdapter helper;
 
     public CustomAdapter(@NonNull Context context, int resource, @NonNull ArrayList<MedicineReminder> objects) {
         super(context, resource, objects);
@@ -47,6 +45,7 @@ public class CustomAdapter extends ArrayAdapter<MedicineReminder> {
         final TextView nameOfMedicine = row.findViewById(R.id.nameOfMedicine);
         final TextView dosesLeft = row.findViewById(R.id.dosesLeft);
 
+        dosesLeft.setText(medicineReminder.getDosesPerDay());
         nameOfMedicine.setText(medicineReminder.getMedicineName());
         return row;
 

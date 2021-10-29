@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class databaseAdapter {
@@ -19,12 +18,12 @@ public class databaseAdapter {
 
     public long insertData(String MedicineName,int DosesPerDay, int NumberOfDay)
     {
-        SQLiteDatabase dbb = helper.getWritableDatabase();
+        SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(dbHelper.MedicineName, MedicineName);
         contentValues.put(dbHelper.DosesPerDay, DosesPerDay);
         contentValues.put(dbHelper.NumberOfDay, NumberOfDay);
-        return dbb.insert(dbHelper.TABLE_NAME, null , contentValues);
+        return db.insert(dbHelper.TABLE_NAME, null , contentValues);
     }
 
     public ArrayList<MedicineReminder> readData()

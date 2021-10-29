@@ -64,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 final EditText medicineName = reminderDialog.findViewById(R.id.medicineName);
                 final EditText dosesInADay = reminderDialog.findViewById(R.id.dosesInADay);
                 final EditText numberOfDays = reminderDialog.findViewById(R.id.numberOfDays);
-
+                final TextView heading = reminderDialog.findViewById(R.id.heading);
+                heading.setText(R.string.createReminder);
                 builder.setView(reminderDialog);
 
                 // Set Cancelable false

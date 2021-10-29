@@ -2,4 +2,8 @@
     <string name="app_name">medicineReminder</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dosesComplete">Doses complete for today</string>
+    <string name="dosesleft">Doses left</string>
+    <string name="editReminder">Edit Reminder</string>
+    <string name="createReminder">Create Reminder</string>
 </resources>
