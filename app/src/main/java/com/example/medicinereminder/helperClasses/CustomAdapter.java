@@ -35,9 +35,9 @@ public class CustomAdapter extends ArrayAdapter<MedicineReminder> {
         View row = ConvertView;
 
         Context context = getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
 
         if(row == null){
+            LayoutInflater inflater = LayoutInflater.from(context);
             row = inflater.inflate(R.layout.reminderlistitem,parent,false);
         }
 

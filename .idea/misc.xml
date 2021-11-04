@@ -5,23 +5,31 @@
       <map>
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.23541666666666666" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/accentcard.xml" value="0.3907407407407407" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/bg_gradient.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/button.xml" value="0.3974358974358974" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/card.xml" value="0.3907407407407407" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/ic_arrow_right.xml" value="0.3907407407407407" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/ic_edit.xml" value="0.3974358974358974" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/ic_launcher_background.xml" value="0.23541666666666666" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.3314814814814815" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/ic_logo.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/ic_plus.xml" value="0.37916666666666665" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/ic_trash_2.xml" value="0.3907407407407407" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/inputfield.xml" value="0.3907407407407407" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/selector.xml" value="0.22870370370370371" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/drawable/splash_background.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/activity_insert_data.xml" value="0.3875" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/activity_main.xml" value="0.36302083333333335" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/activity_reminder_details.xml" value="0.4466666666666667" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/activity_splash.xml" value="0.3296875" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/deleteconfirmation.xml" value="0.3875" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/editReminder.xml" value="0.3515625" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/editreminder.xml" value="0.3515625" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/fragment_reminder_list.xml" value="0.3875" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/medicine_input.xml" value="0.35743589743589743" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/layout/reminderlistitem.xml" value="0.6666666666666666" />
         <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.23541666666666666" />
+        <entry key="..\:/Users/shaha/AndroidStudioProjects/medicineReminder/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3314814814814815" />
       </map>
     </option>
   </component>

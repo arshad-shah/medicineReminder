@@ -8,131 +8,208 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
-
+/***
+ * This class is used to create the database and to insert, update and delete data from the database.
+ * @author  Arshad shah
+ */
 public class databaseAdapter {
+    
     dbHelper helper;
+
     public databaseAdapter(Context context)
     {
         helper = new dbHelper(context);
     }
 
-    public long insertData(String MedicineName,int DosesPerDay, int NumberOfDay)
+    //open the database
+    public SQLiteDatabase open()
     {
-        SQLiteDatabase db = helper.getWritableDatabase();
+        return helper.getWritableDatabase();
+    }
+
+    //close the database
+    public void close()
+    {
+        helper.close();
+    }
+
+    /**
+     * This method is used to insert data into the database.
+     * @param MedicineName the name of the medicine.
+     * @param DosesPerDay the number of doses per day.
+     * @param NumberOfDay the number of days to take the medicine.
+     * @return true if successful false if not.
+     */
+    public boolean insertData(String MedicineName, String DosesPerDay, String NumberOfDay)
+    {
+        SQLiteDatabase db = open();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(dbHelper.MedicineName, MedicineName);
-        contentValues.put(dbHelper.DosesPerDay, DosesPerDay);
-        contentValues.put(dbHelper.NumberOfDay, NumberOfDay);
-        return db.insert(dbHelper.TABLE_NAME, null , contentValues);
+        contentValues.put(dbHelper.MEDICINE_NAME, MedicineName);
+        contentValues.put(dbHelper.DOSES_PER_DAY, DosesPerDay);
+        contentValues.put(dbHelper.NUMBER_OF_DAY, NumberOfDay);
+        long result = db.insert(dbHelper.TABLE_NAME, null, contentValues);
+        return result != -1;
     }
 
-    public ArrayList<MedicineReminder> readData()
-    {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        String[] columns = {dbHelper.UID,dbHelper.MedicineName,dbHelper.DosesPerDay,dbHelper.NumberOfDay};
-        Cursor cursor =db.query(dbHelper.TABLE_NAME,columns,null,null,null,null,null);
-        ArrayList<MedicineReminder> medicineReminder = new ArrayList<>();
-        while (cursor.moveToNext())
-        {
-            int mid =cursor.getInt(cursor.getColumnIndex(dbHelper.UID));
-            String MedicineName =cursor.getString(cursor.getColumnIndex(dbHelper.MedicineName));
-            String  DosesPerDay =cursor.getString(cursor.getColumnIndex(dbHelper.DosesPerDay));
-            String  NumberOfDay =cursor.getString(cursor.getColumnIndex(dbHelper.NumberOfDay));
-
-            medicineReminder.add(new MedicineReminder(mid,MedicineName,DosesPerDay,NumberOfDay));
+    /**
+     * This method is used to read all the data from the database.
+     * and return an ArrayList of type Medicine Reminder Objects.
+     * @return ArrayList<MedicineReminder> The ArrayList of the data from the database.
+     */
+    public ArrayList<MedicineReminder> readAllData() {
+        ArrayList<MedicineReminder> medicineReminders = new ArrayList<>();
+        SQLiteDatabase db = open();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String reminderId = cursor.getString(cursor.getColumnIndex(dbHelper.UID));
+                String medicineName = cursor.getString(cursor.getColumnIndex(dbHelper.MEDICINE_NAME));
+                String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.DOSES_PER_DAY));
+                String numberOfDay = cursor.getString(cursor.getColumnIndex(dbHelper.NUMBER_OF_DAY));
+                MedicineReminder medicineReminder = new MedicineReminder(Integer.parseInt(reminderId),medicineName,dosesPerDay,numberOfDay);
+                medicineReminders.add(medicineReminder);
+            } while (cursor.moveToNext());
         }
-        return medicineReminder;
+        cursor.close();
+        return medicineReminders;
     }
 
-    public MedicineReminder readDataById(String mid)
-    {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        String[] columns = {dbHelper.UID,dbHelper.MedicineName,dbHelper.DosesPerDay,dbHelper.NumberOfDay};
-        String[] selectionArgs ={mid};
-        Cursor cursor =db.query(dbHelper.TABLE_NAME,columns,dbHelper.UID+" = ?",selectionArgs,null,null,null);
+    /**
+     * This Method reads data by the id of the reminder given to it.
+     * returns a MedicineReminder Object.
+     * @param id the id of the reminder.
+     * @return MedicineReminder The object of the reminder.
+     */
+    public MedicineReminder readDataById(int id) {
         MedicineReminder medicineReminder = null;
-        while (cursor.moveToNext())
-        {
-            int uid =cursor.getInt(cursor.getColumnIndex(dbHelper.UID));
-            String MedicineName =cursor.getString(cursor.getColumnIndex(dbHelper.MedicineName));
-            String  DosesPerDay =cursor.getString(cursor.getColumnIndex(dbHelper.DosesPerDay));
-            String  NumberOfDay =cursor.getString(cursor.getColumnIndex(dbHelper.NumberOfDay));
-
-            medicineReminder = new MedicineReminder(uid,MedicineName,DosesPerDay,NumberOfDay);
+        SQLiteDatabase db = open();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME + " WHERE " + dbHelper.UID + " = " + id,
+                null);
+        if (cursor.moveToFirst()) {
+            String reminderId = cursor.getString(cursor.getColumnIndex(dbHelper.UID));
+            String medicineName = cursor.getString(cursor.getColumnIndex(dbHelper.MEDICINE_NAME));
+            String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.DOSES_PER_DAY));
+            String numberOfDay = cursor.getString(cursor.getColumnIndex(dbHelper.NUMBER_OF_DAY));
+            medicineReminder = new MedicineReminder(Integer.parseInt(reminderId),medicineName,dosesPerDay,numberOfDay);
         }
+        cursor.close();
         return medicineReminder;
     }
 
-    public int deleteData(String mid)
-    {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        String[] whereArgs ={mid};
-
-        return db.delete(dbHelper.TABLE_NAME ,dbHelper.UID+" = ?",whereArgs);
+    /**
+     * This method is used to delete the data from the database.
+     * based on the id given to it.
+     * @param id the id of the reminder.
+     * @return true if successful false if not.
+     */
+    public boolean deleteData(int id) {
+        SQLiteDatabase db = open();
+        long result = db.delete(dbHelper.TABLE_NAME, dbHelper.UID + " = " + id, null);
+        return result != -1;
     }
 
-    public int updateMedicineName(String mid, String newName)
-    {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(dbHelper.MedicineName,newName);
-        String[] whereArgs ={mid};
-        return db.update(dbHelper.TABLE_NAME,contentValues, dbHelper.UID+" = ?",whereArgs );
-    }
-    public int updateDoses(String mid, String newDose)
-    {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(dbHelper.DosesPerDay,newDose);
-        String[] whereArgs ={mid};
-        return db.update(dbHelper.TABLE_NAME,contentValues, dbHelper.UID+" = ?",whereArgs );
-    }
-    public int updateDays(String mid, String newDays)
-    {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(dbHelper.NumberOfDay,newDays);
-        String[] whereArgs ={mid};
-        return db.update(dbHelper.TABLE_NAME,contentValues, dbHelper.UID+" = ?",whereArgs );
+    /**
+     * This method is used to delete all the data from the database.
+     * @return true if successful false if not.
+     */
+    public boolean deleteAllData() {
+        SQLiteDatabase db = open();
+        long result = db.delete(dbHelper.TABLE_NAME, null, null);
+        return result != -1;
     }
 
+    /**
+     * This method is used to update the data in the database.
+     * @param id the id of the reminder.
+     * @param MedicineName the name of the medicine.
+     * @param DosesPerDay the number of doses per day.
+     * @param NumberOfDay the number of days to take the medicine.
+     * @return true if successful false if not.
+     */
+    public boolean updateData(int id, String MedicineName, String DosesPerDay, String NumberOfDay) {
+        SQLiteDatabase db = open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(dbHelper.MEDICINE_NAME, MedicineName);
+        contentValues.put(dbHelper.DOSES_PER_DAY, DosesPerDay);
+        contentValues.put(dbHelper.NUMBER_OF_DAY, NumberOfDay);
+        long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+        return result != -1;
+    }
+
+    /**
+     * This method is used to update the MedicineName in the database.
+     * based on id given to it.
+     * @param id the id of the reminder.
+     * @param MedicineName the name of the medicine.
+     * @return true if successful false if not.
+     */
+    public boolean updateMedicineName(int id, String MedicineName) {
+        SQLiteDatabase db = open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(dbHelper.MEDICINE_NAME, MedicineName);
+        long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+        return result != -1;
+    }
+
+    /**
+     * This method is used to update the DosesPerDay in the database.
+     * based on id given to it.
+     * @param id the id of the reminder.
+     * @param DosesPerDay the number of doses per day.
+     * @return true if successful false if not.
+     */
+    public boolean updateDosesPerDay(int id, String DosesPerDay) {
+        SQLiteDatabase db = open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(dbHelper.DOSES_PER_DAY, DosesPerDay);
+        long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+        return result != -1;
+    }
+
+    /**
+     * This method is used to update the NumberOfDay in the database.
+     * based on id given to it.
+     * @param id the id of the reminder.
+     * @param NumberOfDay the number of days to take the medicine.
+     * @return true if successful false if not.
+     */
+    public boolean updateNumberOfDay(int id, String NumberOfDay) {
+        SQLiteDatabase db = open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(dbHelper.NUMBER_OF_DAY, NumberOfDay);
+        long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+        return result != -1;
+    }
+
+    //Database helper for Reminder Database
     static class dbHelper extends SQLiteOpenHelper
     {
-        private static final String DATABASE_NAME = "reminderDatabase";    // Database Name
-        private static final String TABLE_NAME = "reminders";   // Table Name
-        private static final int DATABASE_Version = 1;    // Database Version
-        private static final String UID="_id";     // Column I (Primary Key)
-        private static final String MedicineName = "MedicineName";    //Column II
-        private static final String DosesPerDay= "DosesPerDay";    // Column III
-        private static final String NumberOfDay= "NumberOfDay";    // Column IV
-        private static final String CREATE_TABLE = "CREATE TABLE "+TABLE_NAME+
-                " ("+UID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+MedicineName+" VARCHAR(255) ,"+ DosesPerDay+" NUMBER(2),"+ NumberOfDay+" NUMBER(4));";
-        private static final String DROP_TABLE ="DROP TABLE IF EXISTS "+TABLE_NAME;
+        private static final String DATABASE_NAME = "Reminder.db";
+        private static final String TABLE_NAME = "Reminder";
+        private static final String UID = "id";
+        private static final String MEDICINE_NAME = "MedicineName";
+        private static final String DOSES_PER_DAY = "DosesPerDay";
+        private static final String NUMBER_OF_DAY = "NumberOfDay";
+
+        private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + UID + " INTEGER PRIMARY KEY AUTOINCREMENT," + MEDICINE_NAME + " TEXT," + DOSES_PER_DAY + " TEXT," + NUMBER_OF_DAY + " TEXT)";
+        private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
         private final Context context;
 
         public dbHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_Version);
-            this.context=context;
+            super(context, DATABASE_NAME, null, 1);
+            this.context = context;
         }
 
+        @Override
         public void onCreate(SQLiteDatabase db) {
-
-            try {
-                db.execSQL(CREATE_TABLE);
-            } catch (Exception e) {
-                Message.message(context,""+e);
-            }
+            db.execSQL(CREATE_TABLE);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            try {
-                Message.message(context,"OnUpgrade");
-                db.execSQL(DROP_TABLE);
-                onCreate(db);
-            }catch (Exception e) {
-                Message.message(context,""+e);
-            }
+            db.execSQL(DROP_TABLE);
+            onCreate(db);
         }
     }
 }

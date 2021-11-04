@@ -1,25 +1,29 @@
 package com.example.medicinereminder.helperClasses;
 
+/**
+ * MecicineReminder class
+ * @author Arshad Shah
+ */
 public class MedicineReminder {
 
-    private int id;
+    private int reminderId;
     private String medicineName;
     private String dosesPerDay;
-    private String numberOfDays;
-
-    public MedicineReminder( int id, String medicineName, String dosesPerDay, String numberOfDays) {
-        setId(id);
+    private String numberOfDay;
+    
+    public MedicineReminder(int reminderId, String medicineName, String dosesPerDay, String numberOfDay) {
+        setReminderId(reminderId);
         setMedicineName(medicineName);
         setDosesPerDay(dosesPerDay);
-        setNumberOfDays(numberOfDays);
+        setNumberOfDay(numberOfDay);
     }
 
-    public int getId() {
-        return id;
+    public int getReminderId() {
+        return reminderId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setReminderId(int reminderId) {
+        this.reminderId = reminderId;
     }
     public String getMedicineName() {
         return medicineName;
@@ -37,11 +41,11 @@ public class MedicineReminder {
         this.dosesPerDay = dosesPerDay;
     }
 
-    public String getNumberOfDays() {
-        return numberOfDays;
+    public String getNumberOfDay() {
+        return numberOfDay;
     }
 
-    public void setNumberOfDays(String numberOfDays) {
-        this.numberOfDays = numberOfDays;
+    public void setNumberOfDay(String numberOfDay) {
+        this.numberOfDay = numberOfDay;
     }
 }

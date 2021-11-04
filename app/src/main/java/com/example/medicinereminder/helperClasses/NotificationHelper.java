@@ -23,12 +23,12 @@ public class NotificationHelper {
      * @param description The Description for the channel
      * @param channel_id The id of the Channel Creates a Channel
      * */
-    public void createNotificatioChannel(Context context,
-                                         int importance,
-                                         Boolean showBadge,
-                                         String name,
-                                         String description,
-                                         String channel_id) {
+    public static void createNotificationChannel(Context context,
+                                                 int importance,
+                                                 Boolean showBadge,
+                                                 String name,
+                                                 String description,
+                                                 String channel_id) {
 
         //get notification service
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

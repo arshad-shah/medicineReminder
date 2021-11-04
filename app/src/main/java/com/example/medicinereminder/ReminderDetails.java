@@ -11,7 +11,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -24,6 +23,13 @@ import com.example.medicinereminder.helperClasses.databaseAdapter;
 public class ReminderDetails extends AppCompatActivity {
     //adapter for the database
     databaseAdapter helper;
+
+    //onDestroy()
+    public void onDestroy() {
+        super.onDestroy();
+        helper.close();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +40,7 @@ public class ReminderDetails extends AppCompatActivity {
         helper = new databaseAdapter(this);
 
         Intent intent = getIntent();
-        int idReceived = intent.getIntExtra("id",0);
+        int idReceived = intent.getIntExtra("reminderId",0);
         String medicineNameReceived = intent.getStringExtra("nameOfMedicine");
         String dosesPerDayReceived = intent.getStringExtra("dosesPerDay");
         String numberOfDaysReceived = intent.getStringExtra("numberOfDays");
@@ -44,234 +50,209 @@ public class ReminderDetails extends AppCompatActivity {
         final TextView dosesPerDayDisplay = findViewById(R.id.dosesPerDayDisplay);
         final TextView numberOfDaysDisplay = findViewById(R.id.numberOfDaysDisplay);
         final ImageButton deleteReminder = findViewById(R.id.deleteReminder);
-        final ImageButton editReminder = findViewById(R.id.editReminder);
+        final ImageButton editReminderButton = findViewById(R.id.editReminderButton);
 
 
-        //get the values to populate the form to ensure correct values are changed
-        //it also facilitates that the values not changed are not altered
         medicineName.setText(medicineNameReceived);
         dosesPerDayDisplay.setText(dosesPerDayReceived);
         numberOfDaysDisplay.setText(numberOfDaysReceived);
 
-        checkBoxGenerator(dosesPerDayReceived,idReceived,medicineName,dosesPerDayDisplay,numberOfDaysDisplay);
-
+        checkBoxGenerator(idReceived,dosesPerDayDisplay);
+        
+        //show confirmation dialog using custom layout when delete button is clicked
         deleteReminder.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Animation expandIn = AnimationUtils.loadAnimation(ReminderDetails.this,R.anim.expand_in);
                 deleteReminder.startAnimation(expandIn);
-
-
-                // Create the object of
-                // AlertDialog Builder class
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(ReminderDetails.this);
-                LayoutInflater inflater = ReminderDetails.this.getLayoutInflater();
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.deleteconfirmation, null);
+                builder.setView(dialogView);
+                final AlertDialog dialog = builder.create();
+                dialog.show();
 
-                final View deleteDialog = inflater.inflate(R.layout.deleteconfirmation, null);
-                final Button confirmDelete = deleteDialog.findViewById(R.id.confirmDelete);
-                final Button cancelBtn = deleteDialog.findViewById(R.id.dialogCancel);
-
-                builder.setView(deleteDialog);
-
-                // Set Cancelable false
-                builder.setCancelable(false);
-                // Create the Alert dialog
-                final AlertDialog alertDialog = builder.create();
-                // Show the Alert Dialog box
-                alertDialog.show();
-
-                confirmDelete.setOnClickListener(new View.OnClickListener() {
+                //delete button
+                Button delete = dialogView.findViewById(R.id.confirmDelete);
+                delete.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        //instantiate adapter
-                        helper = new databaseAdapter(ReminderDetails.this);
-
-                        int a = helper.deleteData(String.valueOf(idReceived));
-                        if(a<=0)
-                        {
-                            Message.message(ReminderDetails.this,"Unsuccessful");
+                    public void onClick(View v) {
+                        boolean isDeleteDataSuccessful = helper.deleteData(idReceived);
+                        if(isDeleteDataSuccessful){
+                            Message.message(ReminderDetails.this,"Reminder Deleted");
                         }
-                        else
-                        {
-                            Message.message(ReminderDetails.this, "DELETED");
+                        else{
+                            Message.message(ReminderDetails.this,"Reminder not deleted");
                         }
-
-                        alertDialog.cancel();
+                        dialog.dismiss();
                         finish();
                     }
                 });
 
-                cancelBtn.setOnClickListener(new View.OnClickListener() {
-
+                //cancel button
+                Button cancel = dialogView.findViewById(R.id.dialogCancel);
+                cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        alertDialog.cancel();
+                    public void onClick(View v) {
+                        dialog.dismiss();
                     }
                 });
             }
         });
 
-        editReminder.setOnClickListener(new View.OnClickListener() {
+        /*
+          show edit reminder dialog using custom layout when edit button is clicked
+          the values are populated from the database
+          the values are also updated in the database after submit is pressed if the values are changed
+          the values are also updated in the form after submit is pressed if the values are changed
+          the values are also updated in the display after submit is pressed if the values are changed
+         */
+        editReminderButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                //run Animation
                 Animation expandIn = AnimationUtils.loadAnimation(ReminderDetails.this,R.anim.expand_in);
-                editReminder.startAnimation(expandIn);
+                editReminderButton.startAnimation(expandIn);
 
-
-
-                // Create the object of
-                // AlertDialog Builder class
-
+                //build the dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(ReminderDetails.this);
-                LayoutInflater inflater = ReminderDetails.this.getLayoutInflater();
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.editreminder, null);
+                builder.setView(dialogView);
+                final AlertDialog dialog = builder.create();
+                dialog.show();
 
-                final View reminderEditDialog = inflater.inflate(R.layout.medicine_input, null);
-                final Button submitBtn = reminderEditDialog.findViewById(R.id.dialogSubmit);
-                final Button cancelBtn = reminderEditDialog.findViewById(R.id.dialogCancel);
-                final EditText medicineNameDialog = reminderEditDialog.findViewById(R.id.medicineName);
-                final EditText dosesInADayDialog = reminderEditDialog.findViewById(R.id.dosesInADay);
-                final EditText numberOfDaysDialog = reminderEditDialog.findViewById(R.id.numberOfDays);
-                final TextView heading = reminderEditDialog.findViewById(R.id.heading);
+                //get the values from the database
+                MedicineReminder medicineReminder = helper.readDataById(idReceived);
+                String nameOfMedicine = medicineReminder.getMedicineName();
+                String dosesPerDay = medicineReminder.getDosesPerDay();
+                String numberOfDays = medicineReminder.getNumberOfDay();
+
+                //get the values of edit text from the form
+                final EditText nameOfMedicineEdit = dialogView.findViewById(R.id.nameOfMedicineEdit);
+                final EditText dosesPerDayEdit = dialogView.findViewById(R.id.dosesPerDayEdit);
+                final EditText numberOfDaysEdit = dialogView.findViewById(R.id.numberOfDaysEdit);
+                final TextView heading = dialogView.findViewById(R.id.heading);
                 heading.setText(R.string.editReminder);
 
-                builder.setView(reminderEditDialog);
+                //populate the form with the values from the database
+                nameOfMedicineEdit.setText(nameOfMedicine);
+                dosesPerDayEdit.setText(dosesPerDay);
+                numberOfDaysEdit.setText(numberOfDays);
 
-                // Set Cancelable false
-                builder.setCancelable(false);
-                // Create the Alert dialog
-                final AlertDialog alertDialog = builder.create();
-                // Show the Alert Dialog box
-                alertDialog.show();
-
-                //get the row with the id supplied
-                MedicineReminder reminder = helper.readDataById(String.valueOf(idReceived));
-                medicineNameDialog.setText(reminder.getMedicineName());
-                dosesInADayDialog.setText(reminder.getDosesPerDay());
-                numberOfDaysDialog.setText(reminder.getNumberOfDays());
-
-                submitBtn.setOnClickListener(new View.OnClickListener() {
+                //submit button
+                Button submit = dialogView.findViewById(R.id.Edit);
+                submit.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View v) {
+                        //get the values from the form
+                        String nameOfMedicineEditText = nameOfMedicineEdit.getText().toString();
+                        String dosesPerDayEditText = dosesPerDayEdit.getText().toString();
+                        String numberOfDaysEditText = numberOfDaysEdit.getText().toString();
 
-                        //initialize variables
-                        String name = medicineNameDialog.getText().toString();
-                        String dosesPerDayString = dosesInADayDialog.getText().toString();
-                        String daysToUseString = numberOfDaysDialog.getText().toString();
-
-                        if(dosesPerDayString != null || daysToUseString != null){
-
-                            //instantiate adapter
-                            helper = new databaseAdapter(ReminderDetails.this);
-
-                            if(!name.equals(medicineNameReceived)){
-                                int a= helper.updateMedicineName( String.valueOf(idReceived), name);
-                                if(a<=0)
-                                {
-                                    Message.message(getApplicationContext(),"Unsuccessful");
-                                } else {
-                                    Message.message(getApplicationContext(),"Update to medicine name successful");
-                                }
+                        //update the values in the database if the values are changed
+                        if(!nameOfMedicineEditText.equals(nameOfMedicine) || !dosesPerDayEditText.equals(dosesPerDay) || !numberOfDaysEditText.equals(numberOfDays)){
+                            boolean isUpdateDataSuccessful = helper.updateData(idReceived,nameOfMedicineEditText,dosesPerDayEditText,numberOfDaysEditText);
+                            if(isUpdateDataSuccessful){
+                                Message.message(ReminderDetails.this,"Reminder Updated");
                             }
-                            if(!dosesPerDayString.equals(dosesPerDayReceived)){
-                                int a= helper.updateDoses( String.valueOf(idReceived), dosesPerDayString);
-                                if(a<=0)
-                                {
-                                    Message.message(getApplicationContext(),"Unsuccessful");
-                                } else {
-                                    Message.message(getApplicationContext(),"Update to doses successful");
-                                }
-                            }
-                            if (!numberOfDaysReceived.equals(daysToUseString)){
-                                int a= helper.updateDays( String.valueOf(idReceived), daysToUseString);
-                                if(a<=0)
-                                {
-                                    Message.message(getApplicationContext(),"Unsuccessful");
-                                } else {
-                                    Message.message(getApplicationContext(),"Update to days to use successful");
-                                }
+                            else{
+                                Message.message(ReminderDetails.this,"Reminder not updated");
                             }
                         }
-                        medicineNameDialog.setText("");
-                        dosesInADayDialog.setText("");
-                        numberOfDaysDialog.setText("");
-                        alertDialog.cancel();
 
-                        //get the row with the id supplied
-                        MedicineReminder reminderRefresh = helper.readDataById(String.valueOf(idReceived));
-                        medicineName.setText(reminderRefresh.getMedicineName());
-                        dosesPerDayDisplay.setText(reminderRefresh.getDosesPerDay());
-                        numberOfDaysDisplay.setText(reminderRefresh.getNumberOfDays());
+                        //update the values in the display
+                        medicineName.setText(nameOfMedicineEditText);
+                        dosesPerDayDisplay.setText(dosesPerDayEditText);
+                        numberOfDaysDisplay.setText(numberOfDaysEditText);
 
-                        checkBoxGenerator(dosesPerDayString,idReceived,medicineName,dosesPerDayDisplay,numberOfDaysDisplay);
+                        //generate checkboxes for the amount of doses per day
+                        checkBoxGenerator(idReceived,dosesPerDayDisplay);
+
+                        dialog.dismiss();
                     }
                 });
-
-                cancelBtn.setOnClickListener(new View.OnClickListener() {
-
+                
+                //cancel button
+                Button cancel = dialogView.findViewById(R.id.dialogCancel);
+                cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        alertDialog.cancel();
+                    public void onClick(View v) {
+                        dialog.dismiss();
                     }
                 });
             }
         });
-
-
     }
 
-    public void checkBoxGenerator(String dosesPerDayReceived,
-                                  int idReceived,
-                                  TextView medicineName,
-                                  TextView dosesPerDayDisplay,
-                                  TextView numberOfDaysDisplay){
+    /**
+     * generate checkboxes for the amount of doses per day
+     * based on the amount of doses per day
+     * @param idReceived the id of the medicine reminder
+     * @param dosesPerDayDisplay the doses per day of the medicine reminder
+     */
+    
+    public void checkBoxGenerator(int idReceived,
+                                  TextView dosesPerDayDisplay) {
+        //get Reminder Object from database
+        MedicineReminder medicineReminder = helper.readDataById(idReceived);
+        String dosesPerDay = medicineReminder.getDosesPerDay();
 
-        MedicineReminder reminderRefresh = helper.readDataById(String.valueOf(idReceived));
-        String dosesPerDayString = reminderRefresh.getDosesPerDay();
+        /**
+         * Dynamically generate checkboxes for the amount of doses per day
+         * based on the amount of doses per day
+         * when a checkbox is clicked remove it from layout
+         * and update the database as well as the display
+         * update the count of doses as well
+         */
+        int count = 0;
+        int dosesPerDayInt = Integer.parseInt(dosesPerDay);
+        count = dosesPerDayInt;
 
-        //dynamically add checkboxes based on doses in a day
-        final LinearLayout checkboxCard = findViewById(R.id.checkboxForDoses);
-        //add the number of checkboxes for doses per the doses number
-        for (int i = 0; i < Integer.parseInt(dosesPerDayReceived); i++) {
-            CheckBox numberOfDaysCheckBox = new CheckBox(this);
-            numberOfDaysCheckBox.setPadding(8, 8, 8, 8);
-            numberOfDaysCheckBox.setTextSize(18);
-            numberOfDaysCheckBox.setText("Dose " + (i+1));
+        //remove all checkboxes from layout
+        LinearLayout linearLayout = findViewById(R.id.checkboxForDoses);
+        linearLayout.removeAllViews();
 
-            numberOfDaysCheckBox.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+        //generate checkboxes for the amount of doses per day
+        for (int i = 0; i < dosesPerDayInt; i++) {
+            final CheckBox checkBox = new CheckBox(this);
+            checkBox.setText("Dose " + (i + 1));
+            checkBox.setId(i);
+            checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if(b){
-                        //get the row with the id supplied
-                        int doses = Integer.parseInt(dosesPerDayString);
-                        doses = doses - 1;
+                public void onClick(View v) {
+                    //get the id of the checkbox
+                    int id = checkBox.getId();
 
-                        int a= helper.updateDoses( String.valueOf(idReceived), String.valueOf(doses));
-                        if(a<=0)
-                        {
-                            Message.message(getApplicationContext(),"Unsuccessful");
-                        } else {
-                            Message.message(getApplicationContext(),"Update to doses successful");
-                            checkboxCard.removeView(numberOfDaysCheckBox);
+                    //get the count of the checkboxes
+                    int count = linearLayout.getChildCount();
 
-                            medicineName.setText(reminderRefresh.getMedicineName());
-                            dosesPerDayDisplay.setText(String.valueOf(doses));
-                            numberOfDaysDisplay.setText(reminderRefresh.getNumberOfDays());
-                        }
+                    //remove the checkbox from layout
+                    linearLayout.removeView(checkBox);
+
+                    //update the count of doses
+                    count--;
+                    dosesPerDayDisplay.setText(String.valueOf(count));
+
+                    //update the dosesPerDay in the database
+                    boolean isUpdateDosesPerDaySuccessful = helper.updateDosesPerDay(idReceived, String.valueOf(count));
+                    if (isUpdateDosesPerDaySuccessful) {
+                        Message.message(ReminderDetails.this, "Doses Updated");
+                    } else {
+                        Message.message(ReminderDetails.this, "Doses not updated");
                     }
                 }
             });
-            checkboxCard.addView(numberOfDaysCheckBox);
+            linearLayout.addView(checkBox);
         }
-
-        //if doses are 0 change title
-        int doses = Integer.parseInt(dosesPerDayString);
+        
+        //if the count is 0 and there are no checkboxes change dosesTitle to dosesCompleted else change it to dosesRemaining
         final TextView dosesCheckboxTitle = findViewById(R.id.dosesTitle);
-        if(doses == 0){
-            dosesCheckboxTitle.setText(R.string.dosesComplete);
+        if(count == 0){
+            dosesCheckboxTitle.setText("Doses Completed");
         }
         else{
-            dosesCheckboxTitle.setText(R.string.dosesleft);
-        }
+            dosesCheckboxTitle.setText("Doses Remaining");
+        } 
     }
 }
