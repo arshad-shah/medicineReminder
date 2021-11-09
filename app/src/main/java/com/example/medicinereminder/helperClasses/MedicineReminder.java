@@ -2,6 +2,7 @@ package com.example.medicinereminder.helperClasses;
 
 /**
  * MecicineReminder class
+ * this class is used to store the medicine details
  * @author Arshad Shah
  */
 public class MedicineReminder {

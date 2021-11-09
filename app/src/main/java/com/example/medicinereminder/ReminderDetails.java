@@ -16,9 +16,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.medicinereminder.helperClasses.AlarmManagerHelper;
 import com.example.medicinereminder.helperClasses.MedicineReminder;
 import com.example.medicinereminder.helperClasses.Message;
+import com.example.medicinereminder.helperClasses.NotificationHelper;
 import com.example.medicinereminder.helperClasses.databaseAdapter;
+
+import java.util.ArrayList;
 
 public class ReminderDetails extends AppCompatActivity {
     //adapter for the database
@@ -45,19 +49,17 @@ public class ReminderDetails extends AppCompatActivity {
         String dosesPerDayReceived = intent.getStringExtra("dosesPerDay");
         String numberOfDaysReceived = intent.getStringExtra("numberOfDays");
 
-
         final TextView medicineName = findViewById(R.id.nameOfMedicineDisplay);
         final TextView dosesPerDayDisplay = findViewById(R.id.dosesPerDayDisplay);
         final TextView numberOfDaysDisplay = findViewById(R.id.numberOfDaysDisplay);
         final ImageButton deleteReminder = findViewById(R.id.deleteReminder);
         final ImageButton editReminderButton = findViewById(R.id.editReminderButton);
 
-
         medicineName.setText(medicineNameReceived);
         dosesPerDayDisplay.setText(dosesPerDayReceived);
         numberOfDaysDisplay.setText(numberOfDaysReceived);
 
-        checkBoxGenerator(idReceived,dosesPerDayDisplay);
+        checkBoxGenerator(idReceived,dosesPerDayDisplay,numberOfDaysDisplay);
         
         //show confirmation dialog using custom layout when delete button is clicked
         deleteReminder.setOnClickListener(new View.OnClickListener() {
@@ -77,12 +79,17 @@ public class ReminderDetails extends AppCompatActivity {
                 delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        //delete the Notification channel using channel id and application context
+                        NotificationHelper.deleteNotificationChannel(ReminderDetails.this,
+                                medicineNameReceived + "_channel");
+                        
+                        //delete the reminder from the database
                         boolean isDeleteDataSuccessful = helper.deleteData(idReceived);
                         if(isDeleteDataSuccessful){
-                            Message.message(ReminderDetails.this,"Reminder Deleted");
+                            Message.messageGreen(ReminderDetails.this,"Reminder Deleted");
                         }
                         else{
-                            Message.message(ReminderDetails.this,"Reminder not deleted");
+                            Message.messageRed(ReminderDetails.this,"Reminder not deleted");
                         }
                         dialog.dismiss();
                         finish();
@@ -154,10 +161,10 @@ public class ReminderDetails extends AppCompatActivity {
                         if(!nameOfMedicineEditText.equals(nameOfMedicine) || !dosesPerDayEditText.equals(dosesPerDay) || !numberOfDaysEditText.equals(numberOfDays)){
                             boolean isUpdateDataSuccessful = helper.updateData(idReceived,nameOfMedicineEditText,dosesPerDayEditText,numberOfDaysEditText);
                             if(isUpdateDataSuccessful){
-                                Message.message(ReminderDetails.this,"Reminder Updated");
+                                Message.messageGreen(ReminderDetails.this,"Reminder Updated");
                             }
                             else{
-                                Message.message(ReminderDetails.this,"Reminder not updated");
+                                Message.messageRed(ReminderDetails.this,"Reminder not updated");
                             }
                         }
 
@@ -167,7 +174,7 @@ public class ReminderDetails extends AppCompatActivity {
                         numberOfDaysDisplay.setText(numberOfDaysEditText);
 
                         //generate checkboxes for the amount of doses per day
-                        checkBoxGenerator(idReceived,dosesPerDayDisplay);
+                        checkBoxGenerator(idReceived,dosesPerDayDisplay,numberOfDaysDisplay);
 
                         dialog.dismiss();
                     }
@@ -193,21 +200,28 @@ public class ReminderDetails extends AppCompatActivity {
      */
     
     public void checkBoxGenerator(int idReceived,
-                                  TextView dosesPerDayDisplay) {
+                                  TextView dosesPerDayDisplay, TextView numberOfDaysDisplayString) {
         //get Reminder Object from database
         MedicineReminder medicineReminder = helper.readDataById(idReceived);
         String dosesPerDay = medicineReminder.getDosesPerDay();
 
-        /**
-         * Dynamically generate checkboxes for the amount of doses per day
-         * based on the amount of doses per day
-         * when a checkbox is clicked remove it from layout
-         * and update the database as well as the display
-         * update the count of doses as well
+        /*
+          Dynamically generate checkboxes for the amount of doses per day
+          based on the amount of doses per day
+          when a checkbox is clicked remove it from layout
+          and update the database as well as the display
+          update the count of doses as well
          */
-        int count = 0;
         int dosesPerDayInt = Integer.parseInt(dosesPerDay);
-        count = dosesPerDayInt;
+
+        //if the count is 0 and there are no checkboxes change dosesTitle to dosesCompleted else change it to dosesRemaining
+        final TextView dosesCheckboxTitle = findViewById(R.id.dosesTitle);
+        if(dosesPerDayInt == 0){
+            dosesCheckboxTitle.setText(R.string.dosesComplete);
+        }
+        else{
+            dosesCheckboxTitle.setText(R.string.dosesRemiaining);
+        }
 
         //remove all checkboxes from layout
         LinearLayout linearLayout = findViewById(R.id.checkboxForDoses);
@@ -237,22 +251,39 @@ public class ReminderDetails extends AppCompatActivity {
                     //update the dosesPerDay in the database
                     boolean isUpdateDosesPerDaySuccessful = helper.updateDosesPerDay(idReceived, String.valueOf(count));
                     if (isUpdateDosesPerDaySuccessful) {
-                        Message.message(ReminderDetails.this, "Doses Updated");
+                        Message.messageGreen(ReminderDetails.this, "Doses Updated");
                     } else {
-                        Message.message(ReminderDetails.this, "Doses not updated");
+                        Message.messageRed(ReminderDetails.this, "Doses not updated");
+                    }
+
+                    //get Reminder Object from database
+                    MedicineReminder medicineReminder = helper.readDataById(idReceived);
+                    String days = medicineReminder.getNumberOfDay();
+                    //if dosesPerDayInt is 0 then minus 1 from numberOfDaysInt
+                    if (dosesPerDayInt == 0) {
+                        int daysInt = Integer.parseInt(days);
+                        daysInt--;
+                        days = String.valueOf(daysInt);
+                    }
+
+                    //if the count is 0 and there are no checkboxes change dosesTitle to dosesCompleted else change it to dosesRemaining
+                    final TextView dosesCheckboxTitle = findViewById(R.id.dosesTitle);
+                    if(count == 0){
+                        //update the number of days in the database
+                        boolean isUpdateDaysSuccessful = helper.updateNumberOfDay(idReceived, days);
+                        if (isUpdateDaysSuccessful) {
+                            Message.messageGreen(ReminderDetails.this, "Days Updated");
+                        } else {
+                            Message.messageRed(ReminderDetails.this, "Days not updated");
+                        }
+                        dosesCheckboxTitle.setText(R.string.dosesComplete);
+                    }
+                    else{
+                        dosesCheckboxTitle.setText(R.string.dosesRemiaining);
                     }
                 }
             });
             linearLayout.addView(checkBox);
         }
-        
-        //if the count is 0 and there are no checkboxes change dosesTitle to dosesCompleted else change it to dosesRemaining
-        final TextView dosesCheckboxTitle = findViewById(R.id.dosesTitle);
-        if(count == 0){
-            dosesCheckboxTitle.setText("Doses Completed");
-        }
-        else{
-            dosesCheckboxTitle.setText("Doses Remaining");
-        } 
     }
 }

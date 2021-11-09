@@ -28,13 +28,14 @@ public class NotificationHelper {
                                                  Boolean showBadge,
                                                  String name,
                                                  String description,
-                                                 String channel_id) {
+            String channel_id) {
 
         //get notification service
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
 
         //create channel
-        NotificationChannel channel = new NotificationChannel(channel_id , name , importance);
+        NotificationChannel channel = new NotificationChannel(channel_id, name, importance);
 
         //set attributes for the channel
         channel.setDescription(description);
@@ -45,6 +46,21 @@ public class NotificationHelper {
         // 3
         notificationManager.createNotificationChannel(channel);
     }
+    
+    /**
+     * Delete Notification Channel
+     * @author Arshad Shah
+     * @param context The Context of the Application
+     * @param channel_id The id of the Channel to be deleted
+     */
+    public static void deleteNotificationChannel(Context context, String channel_id) {
+        //get notification service
+        NotificationManager notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        //delete channel
+        notificationManager.deleteNotificationChannel(channel_id);
+    }
 
     /**
      * Creates a Notification
@@ -54,7 +70,7 @@ public class NotificationHelper {
      * @param title the title of the notification
      * @param notification_id The id of the Notification ( Unique Integer)
      */
-    public void createNotification(Context context, String channel_id,String message, String title, int notification_id){
+    public static void createNotification(Context context, String channel_id,String message, String title, int notification_id){
         //get notification service
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //create an intent to open the app when the notification is clicked

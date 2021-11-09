@@ -3,6 +3,8 @@ package com.example.medicinereminder;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -16,7 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
+import com.example.medicinereminder.helperClasses.AlarmManagerHelper;
 import com.example.medicinereminder.helperClasses.CustomAdapter;
 import com.example.medicinereminder.helperClasses.MedicineReminder;
 import com.example.medicinereminder.helperClasses.Message;
@@ -73,15 +77,15 @@ public class MainActivity extends AppCompatActivity {
      */
     public void updateUI() {
         final ListView list = findViewById(R.id.ReminderList);
-        final TextView nullStatusText = findViewById(R.id.nullStatusText);
+        final CardView nullStatusCard = findViewById(R.id.nullStatusCard);
 
         //get the data from the database
         CustomAdapter adapter = new CustomAdapter(MainActivity.this, R.layout.reminderlistitem, helper.readAllData());
 
         if (helper.readAllData().size() > 0) {
-            nullStatusText.setVisibility(GONE);
+            nullStatusCard.setVisibility(GONE);
         } else {
-            nullStatusText.setVisibility(VISIBLE);
+            nullStatusCard.setVisibility(VISIBLE);
         }
 
         list.setAdapter(adapter);
@@ -144,19 +148,36 @@ public class MainActivity extends AppCompatActivity {
                         //update the ui
                         updateUI();
                         //create a channel for this reminder
-                        NotificationHelper.createNotificationChannel(MainActivity.this, NotificationManager.IMPORTANCE_MAX,
-                                true, name, name + "Reminder", name + "channel");
+                        NotificationHelper.createNotificationChannel(MainActivity.this,
+                                NotificationManager.IMPORTANCE_MAX, true, name, name + "Reminder", name + "_channel");
                         //dismiss the dialog
                         alertDialog.dismiss();
                         //show Toast
-                        Message.message(MainActivity.this, "Reminder Created");
+                        Message.messageGreen(MainActivity.this, "Reminder Created");
                         medicineName.setText("");
                         dosesInADay.setText("");
                         numberOfDays.setText("");
+                    } else {
+                        Message.messageRed(MainActivity.this, "Reminder not created");
                     }
-                    else {
-                        Message.message(MainActivity.this, "Reminder not created");
-                    }
+
+
+                    //amount of milliseconds in a day
+                    long millisInADay = 86400000;
+                    //millisInADay divide by dosesPerDay
+                    long timeToAlarm = millisInADay / Integer.parseInt(dosesPerDay);
+
+                    ArrayList<String> notificationData = new ArrayList<>();
+                    notificationData.add(name);
+                    notificationData.add(dosesPerDay);
+                    notificationData.add(daysToUse);
+                    notificationData.add("Time For your medicine " + name);
+
+                    //create a repeating alarm that repeats using the interval of dosage
+                    long firstAlarm = System.currentTimeMillis()+timeToAlarm;
+                    //random number between 0 and timeToAlarm
+                    int randomNumber = (int) (Math.random() * timeToAlarm);
+                    AlarmManagerHelper.setRepeatingAlarm(MainActivity.this,randomNumber, firstAlarm,timeToAlarm,notificationData);
                 }
             }
         });
@@ -164,7 +185,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
+
                 alertDialog.cancel();
+                //show toast that remainder creation was cancelled
+                Message.messageRed(MainActivity.this, "Reminder Cancelled");
             }
         });
     }
@@ -186,9 +210,14 @@ public class MainActivity extends AppCompatActivity {
             medicineName.requestFocus();
             return false;
         }
-
-        if (dosesInADay.length() == 0) {
+        int doses = Integer.parseInt(dosesInADay.getText().toString());
+        if (dosesInADay.length() == 0 && doses < 5) {
             dosesInADay.setError("Doses per day is required");
+            dosesInADay.requestFocus();
+            return false;
+        }
+        else if (doses > 4){
+            dosesInADay.setError("Doses per day cannot exceed 4 in 24 hours");
             dosesInADay.requestFocus();
             return false;
         }
