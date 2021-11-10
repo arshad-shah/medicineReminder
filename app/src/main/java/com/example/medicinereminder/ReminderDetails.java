@@ -1,10 +1,14 @@
 package com.example.medicinereminder;
 
+import static android.app.PendingIntent.*;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,6 +20,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.medicinereminder.Recievers.ReminderReciever;
+import com.example.medicinereminder.helperClasses.Alarm;
 import com.example.medicinereminder.helperClasses.AlarmManagerHelper;
 import com.example.medicinereminder.helperClasses.MedicineReminder;
 import com.example.medicinereminder.helperClasses.Message;
@@ -59,7 +65,7 @@ public class ReminderDetails extends AppCompatActivity {
         dosesPerDayDisplay.setText(dosesPerDayReceived);
         numberOfDaysDisplay.setText(numberOfDaysReceived);
 
-        checkBoxGenerator(idReceived,dosesPerDayDisplay,numberOfDaysDisplay);
+        checkBoxGenerator(idReceived, dosesPerDayDisplay, numberOfDaysDisplay);
         
         //show confirmation dialog using custom layout when delete button is clicked
         deleteReminder.setOnClickListener(new View.OnClickListener() {
@@ -79,10 +85,35 @@ public class ReminderDetails extends AppCompatActivity {
                 delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        //recreate the pending intent used to setup the alarm
+                        //this is needed to cancel the alarm
+                        //create an intent to the alarm receiver
+                        Intent recreatedIntent = new Intent(ReminderDetails.this, ReminderReciever.class);
+                        intent.putExtra("name", medicineNameReceived);
+                        intent.putExtra("doses", dosesPerDayReceived);
+                        intent.putExtra("days", numberOfDaysReceived);
+                        intent.putExtra("desc", "Time For your medicine " + medicineNameReceived);
+                        //get alarm object from database by medicine name using getAlarmData
+                        Alarm alarmByMedicineName = helper.getAlarmData(medicineNameReceived);
+
+                        Log.i("Alarm pending intent code", alarmByMedicineName.getPendingIntentCode());
+                        //create a pending intent to send the intent
+                        PendingIntent recreatedPendingIntent = getBroadcast(getApplicationContext(), Integer.parseInt(alarmByMedicineName.getPendingIntentCode()), recreatedIntent,
+                                FLAG_UPDATE_CURRENT);
+                        //cancel alarm
+                        AlarmManagerHelper.cancelAlarm(ReminderDetails.this, recreatedPendingIntent);
+
+                        //delete the alarm from the database
+                        boolean isDeleteAlarmDataSuccessful = helper.deleteAlarmData(alarmByMedicineName.getAlarmId());
+                        if(isDeleteAlarmDataSuccessful){
+                            Message.messageGreen(ReminderDetails.this,"Alarm Deleted");
+                        }
+                        else{
+                            Message.messageRed(ReminderDetails.this,"Alarm not Deleted");
+                        }
                         //delete the Notification channel using channel id and application context
                         NotificationHelper.deleteNotificationChannel(ReminderDetails.this,
                                 medicineNameReceived + "_channel");
-                        
                         //delete the reminder from the database
                         boolean isDeleteDataSuccessful = helper.deleteData(idReceived);
                         if(isDeleteDataSuccessful){

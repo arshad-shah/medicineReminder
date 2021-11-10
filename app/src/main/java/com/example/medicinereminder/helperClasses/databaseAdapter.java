@@ -90,11 +90,34 @@ public class databaseAdapter {
             String medicineName = cursor.getString(cursor.getColumnIndex(dbHelper.MEDICINE_NAME));
             String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.DOSES_PER_DAY));
             String numberOfDay = cursor.getString(cursor.getColumnIndex(dbHelper.NUMBER_OF_DAY));
-            medicineReminder = new MedicineReminder(Integer.parseInt(reminderId),medicineName,dosesPerDay,numberOfDay);
+            medicineReminder = new MedicineReminder(Integer.parseInt(reminderId), medicineName, dosesPerDay,
+                    numberOfDay);
         }
         cursor.close();
         return medicineReminder;
     }
+    
+    /**
+     * This method reads data by name of medicine from the reminder table
+     * @param medicineName the name of the medicine.
+     * @return MedicineReminder The object of the reminder.
+     */
+    public MedicineReminder readDataByName(String medicineName) {
+        MedicineReminder medicineReminder = null;
+        SQLiteDatabase db = open();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME + " WHERE " + dbHelper.MEDICINE_NAME + " = '"
+                + medicineName + "'", null);
+        if (cursor.moveToFirst()) {
+            String reminderId = cursor.getString(cursor.getColumnIndex(dbHelper.UID));
+            String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.DOSES_PER_DAY));
+            String numberOfDay = cursor.getString(cursor.getColumnIndex(dbHelper.NUMBER_OF_DAY));
+            medicineReminder = new MedicineReminder(Integer.parseInt(reminderId), medicineName, dosesPerDay,
+                    numberOfDay);
+        }
+        cursor.close();
+        return medicineReminder;
+    }
+    
 
     /**
      * This method is used to delete the data from the database.
@@ -181,6 +204,67 @@ public class databaseAdapter {
         return result != -1;
     }
 
+    /**
+     * This method is used to insert data into alarm table
+     * @param alarmTime the time of the alarm.
+     * @param medicineName the name of the medicine.
+     * @param dosesPerDay the number of doses per day.
+     * @param numberOfDay the number of days to take the medicine.
+     * @param isAlarmOn the status of the alarm.
+     * @param pendingIntentCode the pending intent of the alarm.
+     * @return true if successful false if not.
+     */
+    public boolean insertAlarmData(String alarmTime, String medicineName, String dosesPerDay,
+                                   String numberOfDay, String isAlarmOn, String pendingIntentCode) {
+        SQLiteDatabase db = open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(dbHelper.ALARM_TIME, alarmTime);
+        contentValues.put(dbHelper.ALARM_MEDICINE_NAME, medicineName);
+        contentValues.put(dbHelper.ALARM_DOSES_PER_DAY, dosesPerDay);
+        contentValues.put(dbHelper.ALARM_NUMBER_OF_DAY, numberOfDay);
+        contentValues.put(dbHelper.ALARM_IS_ACTIVE, isAlarmOn);
+        contentValues.put(dbHelper.ALARM_PENDING_INTENT, pendingIntentCode);
+        long result = db.insert(dbHelper.TABLE_NAME_ALARM, null, contentValues);
+        return result != -1;
+    }
+    
+    /**
+     * This method is used to get the data from the alarm table.
+     * using the name of medicine
+     * @param medicineName the name of the medicine.
+     * @return the alarm object.
+     */
+    public Alarm getAlarmData(String medicineName) {
+        SQLiteDatabase db = open();
+        Alarm alarm = null;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME_ALARM + " WHERE "
+                + dbHelper.ALARM_MEDICINE_NAME + " = '" + medicineName + "'", null);
+        if (cursor.moveToFirst()) {
+            String alarmId = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_ID));
+            String alarmTime = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_TIME));
+            String medicineNameAlarm = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_MEDICINE_NAME));
+            String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_DOSES_PER_DAY));
+            String numberOfDay = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_NUMBER_OF_DAY));
+            String isAlarmOn = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_IS_ACTIVE));
+            String pendingIntentCode = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_PENDING_INTENT));
+            alarm = new Alarm(Integer.parseInt(alarmId), alarmTime, medicineNameAlarm, dosesPerDay, numberOfDay,
+                    isAlarmOn, pendingIntentCode);
+        }
+        cursor.close();
+        return alarm;
+    }
+    
+    /**
+     * This method is used to delete data from the alarm table using the id.
+     * @param id the id of the alarm.
+     * @return true if successful false if not.
+     */
+    public boolean deleteAlarmData(int id) {
+        SQLiteDatabase db = open();
+        long result = db.delete(dbHelper.TABLE_NAME_ALARM, dbHelper.ALARM_ID + " = " + id, null);
+        return result != -1;
+    }
+
     //Database helper for Reminder Database
     static class dbHelper extends SQLiteOpenHelper
     {
@@ -193,6 +277,26 @@ public class databaseAdapter {
 
         private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + UID + " INTEGER PRIMARY KEY AUTOINCREMENT," + MEDICINE_NAME + " TEXT," + DOSES_PER_DAY + " TEXT," + NUMBER_OF_DAY + " TEXT)";
         private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+        
+        //table for the alarm intents
+        private static final String TABLE_NAME_ALARM = "Alarm";
+        private static final String ALARM_ID = "AlarmId";
+        private static final String ALARM_TIME = "AlarmTime";
+        private static final String ALARM_MEDICINE_NAME = "AlarmMedicineName";
+        private static final String ALARM_DOSES_PER_DAY = "AlarmDosesPerDay";
+        private static final String ALARM_NUMBER_OF_DAY = "AlarmNumberOfDay";
+        private static final String ALARM_IS_ACTIVE = "AlarmIsActive";
+        private static final String ALARM_PENDING_INTENT = "AlarmPendingIntent";
+
+        //create table for the alarm
+        private static final String CREATE_TABLE_ALARM = "CREATE TABLE " + TABLE_NAME_ALARM + "(" + ALARM_ID
+                + " INTEGER PRIMARY KEY AUTOINCREMENT," + ALARM_TIME + " TEXT," + ALARM_MEDICINE_NAME + " TEXT,"
+                + ALARM_DOSES_PER_DAY + " TEXT," + ALARM_NUMBER_OF_DAY + " TEXT," + ALARM_IS_ACTIVE + " BOOLEAN,"
+                + ALARM_PENDING_INTENT + " TEXT)";
+        
+        
+        private static final String DROP_TABLE_ALARM = "DROP TABLE IF EXISTS " + TABLE_NAME_ALARM;
+
 
         private final Context context;
 
@@ -203,12 +307,15 @@ public class databaseAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
+
             db.execSQL(CREATE_TABLE);
+            db.execSQL(CREATE_TABLE_ALARM);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL(DROP_TABLE);
+            db.execSQL(DROP_TABLE_ALARM);
             onCreate(db);
         }
     }
