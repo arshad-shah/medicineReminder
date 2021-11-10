@@ -17,24 +17,11 @@ public class ReminderReciever extends BroadcastReceiver {
         String doses = intent.getStringExtra("doses");
         String days = intent.getStringExtra("days");
         String desc = intent.getStringExtra("desc");
-        long time_of_alarm = intent.getLongExtra("time", 0);
-
-        long current_time = System.currentTimeMillis();
-        long diff = current_time - time_of_alarm;
-        long graceP = 60000 * 1;
-
-        Log.i("timeOfAlarm", String.valueOf(time_of_alarm));
 
         //random number
         int random = (int) (Math.random() * 10000);
-
-       if(diff < graceP){
-            //create a notification
-            NotificationHelper.createNotification(context,title+"_channel",desc,title,random);
-            Log.i("Alarm", "Time for Medicine Alarm executed");
-       }
-       else{
-           Log.i("Alarm", "Time for Medicine has passed");
-       }
+        //create a notification
+        NotificationHelper.createNotification(context,title+"_channel",desc,title,random);
+        Log.i("Alarm", "Time for Medicine Alarm executed");
     }
 }

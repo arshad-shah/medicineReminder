@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     //amount of milliseconds in a day
                     long millisInADay = 86400000;
                     //millisInADay divide by dosesPerDay
-                    long timeToAlarm = millisInADay / Integer.parseInt(dosesPerDay);
+                    long interval = millisInADay / Integer.parseInt(dosesPerDay);
 
                     ArrayList<String> notificationData = new ArrayList<>();
                     notificationData.add(name);
@@ -174,10 +174,11 @@ public class MainActivity extends AppCompatActivity {
                     notificationData.add("Time For your medicine " + name);
 
                     //create a repeating alarm that repeats using the interval of dosage
-                    long firstAlarm = System.currentTimeMillis()+timeToAlarm;
+                    long firstAlarm = System.currentTimeMillis()+interval;
                     //random number between 0 and timeToAlarm
-                    int randomNumber = (int) (Math.random() * timeToAlarm);
-                    AlarmManagerHelper.setRepeatingAlarm(MainActivity.this,randomNumber, firstAlarm,timeToAlarm,notificationData);
+                    int randomNumber = (int) (Math.random() * interval);
+                    AlarmManagerHelper.setRepeatingAlarm(MainActivity.this,randomNumber, firstAlarm,interval,notificationData);
+
                 }
             }
         });
