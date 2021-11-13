@@ -1,10 +1,13 @@
-package com.example.medicinereminder.helperClasses;
+package com.example.medicinereminder.Adapters;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.medicinereminder.ObjectClasses.Alarm;
+import com.example.medicinereminder.ObjectClasses.MedicineReminder;
 
 import java.util.ArrayList;
 
@@ -43,34 +46,46 @@ public class databaseAdapter {
     public boolean insertData(String MedicineName, String DosesPerDay, String NumberOfDay)
     {
         SQLiteDatabase db = open();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(dbHelper.MEDICINE_NAME, MedicineName);
         contentValues.put(dbHelper.DOSES_PER_DAY, DosesPerDay);
         contentValues.put(dbHelper.NUMBER_OF_DAY, NumberOfDay);
+
         long result = db.insert(dbHelper.TABLE_NAME, null, contentValues);
+
         return result != -1;
     }
 
     /**
      * This method is used to read all the data from the database.
      * and return an ArrayList of type Medicine Reminder Objects.
-     * @return ArrayList<MedicineReminder> The ArrayList of the data from the database.
+     * @return An ArrayList of MedicineReminder objects
      */
     public ArrayList<MedicineReminder> readAllData() {
+
         ArrayList<MedicineReminder> medicineReminders = new ArrayList<>();
+
         SQLiteDatabase db = open();
+
         Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME, null);
+
         if (cursor.moveToFirst()) {
+
             do {
                 String reminderId = cursor.getString(cursor.getColumnIndex(dbHelper.UID));
                 String medicineName = cursor.getString(cursor.getColumnIndex(dbHelper.MEDICINE_NAME));
                 String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.DOSES_PER_DAY));
                 String numberOfDay = cursor.getString(cursor.getColumnIndex(dbHelper.NUMBER_OF_DAY));
-                MedicineReminder medicineReminder = new MedicineReminder(Integer.parseInt(reminderId),medicineName,dosesPerDay,numberOfDay);
+                MedicineReminder medicineReminder = new MedicineReminder(Integer.parseInt(reminderId), medicineName,
+                        dosesPerDay, numberOfDay);
                 medicineReminders.add(medicineReminder);
             } while (cursor.moveToNext());
+
         }
+        
         cursor.close();
+
         return medicineReminders;
     }
 
@@ -81,11 +96,16 @@ public class databaseAdapter {
      * @return MedicineReminder The object of the reminder.
      */
     public MedicineReminder readDataById(int id) {
+
         MedicineReminder medicineReminder = null;
+
         SQLiteDatabase db = open();
+
         Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME + " WHERE " + dbHelper.UID + " = " + id,
                 null);
+
         if (cursor.moveToFirst()) {
+
             String reminderId = cursor.getString(cursor.getColumnIndex(dbHelper.UID));
             String medicineName = cursor.getString(cursor.getColumnIndex(dbHelper.MEDICINE_NAME));
             String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.DOSES_PER_DAY));
@@ -93,7 +113,9 @@ public class databaseAdapter {
             medicineReminder = new MedicineReminder(Integer.parseInt(reminderId), medicineName, dosesPerDay,
                     numberOfDay);
         }
+
         cursor.close();
+
         return medicineReminder;
     }
     
@@ -103,10 +125,14 @@ public class databaseAdapter {
      * @return MedicineReminder The object of the reminder.
      */
     public MedicineReminder readDataByName(String medicineName) {
+
         MedicineReminder medicineReminder = null;
+
         SQLiteDatabase db = open();
+
         Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME + " WHERE " + dbHelper.MEDICINE_NAME + " = '"
                 + medicineName + "'", null);
+
         if (cursor.moveToFirst()) {
             String reminderId = cursor.getString(cursor.getColumnIndex(dbHelper.UID));
             String dosesPerDay = cursor.getString(cursor.getColumnIndex(dbHelper.DOSES_PER_DAY));
@@ -115,6 +141,7 @@ public class databaseAdapter {
                     numberOfDay);
         }
         cursor.close();
+
         return medicineReminder;
     }
     
@@ -126,8 +153,11 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean deleteData(int id) {
+
         SQLiteDatabase db = open();
+
         long result = db.delete(dbHelper.TABLE_NAME, dbHelper.UID + " = " + id, null);
+
         return result != -1;
     }
 
@@ -136,8 +166,11 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean deleteAllData() {
+
         SQLiteDatabase db = open();
+
         long result = db.delete(dbHelper.TABLE_NAME, null, null);
+
         return result != -1;
     }
 
@@ -150,12 +183,19 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean updateData(int id, String MedicineName, String DosesPerDay, String NumberOfDay) {
+
         SQLiteDatabase db = open();
+
         ContentValues contentValues = new ContentValues();
+
         contentValues.put(dbHelper.MEDICINE_NAME, MedicineName);
+
         contentValues.put(dbHelper.DOSES_PER_DAY, DosesPerDay);
+
         contentValues.put(dbHelper.NUMBER_OF_DAY, NumberOfDay);
+
         long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+
         return result != -1;
     }
 
@@ -167,10 +207,15 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean updateMedicineName(int id, String MedicineName) {
+
         SQLiteDatabase db = open();
+
         ContentValues contentValues = new ContentValues();
+
         contentValues.put(dbHelper.MEDICINE_NAME, MedicineName);
+
         long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+
         return result != -1;
     }
 
@@ -182,10 +227,15 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean updateDosesPerDay(int id, String DosesPerDay) {
+
         SQLiteDatabase db = open();
+
         ContentValues contentValues = new ContentValues();
+
         contentValues.put(dbHelper.DOSES_PER_DAY, DosesPerDay);
+
         long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+
         return result != -1;
     }
 
@@ -197,10 +247,15 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean updateNumberOfDay(int id, String NumberOfDay) {
+
         SQLiteDatabase db = open();
+
         ContentValues contentValues = new ContentValues();
+
         contentValues.put(dbHelper.NUMBER_OF_DAY, NumberOfDay);
+
         long result = db.update(dbHelper.TABLE_NAME, contentValues, dbHelper.UID + " = " + id, null);
+
         return result != -1;
     }
 
@@ -215,8 +270,10 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean insertAlarmData(String alarmTime, String medicineName, String dosesPerDay,
-                                   String numberOfDay, String isAlarmOn, String pendingIntentCode) {
+            String numberOfDay, String isAlarmOn, String pendingIntentCode) {
+
         SQLiteDatabase db = open();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(dbHelper.ALARM_TIME, alarmTime);
         contentValues.put(dbHelper.ALARM_MEDICINE_NAME, medicineName);
@@ -224,7 +281,9 @@ public class databaseAdapter {
         contentValues.put(dbHelper.ALARM_NUMBER_OF_DAY, numberOfDay);
         contentValues.put(dbHelper.ALARM_IS_ACTIVE, isAlarmOn);
         contentValues.put(dbHelper.ALARM_PENDING_INTENT, pendingIntentCode);
+
         long result = db.insert(dbHelper.TABLE_NAME_ALARM, null, contentValues);
+
         return result != -1;
     }
     
@@ -235,11 +294,16 @@ public class databaseAdapter {
      * @return the alarm object.
      */
     public Alarm getAlarmData(String medicineName) {
+
         SQLiteDatabase db = open();
+
         Alarm alarm = null;
+
         Cursor cursor = db.rawQuery("SELECT * FROM " + dbHelper.TABLE_NAME_ALARM + " WHERE "
                 + dbHelper.ALARM_MEDICINE_NAME + " = '" + medicineName + "'", null);
+
         if (cursor.moveToFirst()) {
+
             String alarmId = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_ID));
             String alarmTime = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_TIME));
             String medicineNameAlarm = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_MEDICINE_NAME));
@@ -247,10 +311,13 @@ public class databaseAdapter {
             String numberOfDay = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_NUMBER_OF_DAY));
             String isAlarmOn = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_IS_ACTIVE));
             String pendingIntentCode = cursor.getString(cursor.getColumnIndex(dbHelper.ALARM_PENDING_INTENT));
+
             alarm = new Alarm(Integer.parseInt(alarmId), alarmTime, medicineNameAlarm, dosesPerDay, numberOfDay,
                     isAlarmOn, pendingIntentCode);
         }
+
         cursor.close();
+
         return alarm;
     }
     
@@ -260,8 +327,11 @@ public class databaseAdapter {
      * @return true if successful false if not.
      */
     public boolean deleteAlarmData(int id) {
+
         SQLiteDatabase db = open();
+
         long result = db.delete(dbHelper.TABLE_NAME_ALARM, dbHelper.ALARM_ID + " = " + id, null);
+
         return result != -1;
     }
 
@@ -269,6 +339,7 @@ public class databaseAdapter {
     static class dbHelper extends SQLiteOpenHelper
     {
         private static final String DATABASE_NAME = "Reminder.db";
+        
         private static final String TABLE_NAME = "Reminder";
         private static final String UID = "id";
         private static final String MEDICINE_NAME = "MedicineName";

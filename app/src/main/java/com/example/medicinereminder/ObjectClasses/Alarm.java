@@ -1,4 +1,4 @@
-package com.example.medicinereminder.helperClasses;
+package com.example.medicinereminder.ObjectClasses;
 
 public class Alarm {
     /**

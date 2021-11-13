@@ -1,4 +1,4 @@
-package com.example.medicinereminder.helperClasses;
+package com.example.medicinereminder.ObjectClasses;
 
 /**
  * MecicineReminder class
@@ -28,10 +28,10 @@ public class MedicineReminder {
 
     /**
     *The constructor of the MedicineReminder.
-    * @param reminderId
-    * @param medicineName
-    * @param dosesPerDay
-    * @param numberOfDay
+    * @param reminderId the reminderId
+    * @param medicineName the medicineName
+    * @param dosesPerDay the dosesPerDay
+    * @param numberOfDay the numberOfDay
     */
     public MedicineReminder(int reminderId, String medicineName, String dosesPerDay, String numberOfDay) {
         this.reminderId = reminderId;
@@ -51,7 +51,7 @@ public class MedicineReminder {
 
     /**
      * setter for reminderId
-     * @param reminderId
+     * @param reminderId    the reminderId
      */
     public void setReminderId(int reminderId) {
         this.reminderId = reminderId;
@@ -68,7 +68,7 @@ public class MedicineReminder {
 
     /**
      * setter for medicineName
-     * @param medicineName
+     * @param medicineName  the medicineName
      */
     public void setMedicineName(String medicineName) {
         this.medicineName = medicineName;
@@ -84,7 +84,7 @@ public class MedicineReminder {
 
     /**
      * setter for dosesPerDay
-     * @param dosesPerDay
+     * @param dosesPerDay   the dosesPerDay
      */
     public void setDosesPerDay(String dosesPerDay) {
         this.dosesPerDay = dosesPerDay;
@@ -100,7 +100,7 @@ public class MedicineReminder {
 
     /**
      * setter for numberOfDay
-     * @param numberOfDay
+     * @param numberOfDay   the numberOfDay
      */
     public void setNumberOfDay(String numberOfDay) {
         this.numberOfDay = numberOfDay;
