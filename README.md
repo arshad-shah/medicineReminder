@@ -19,6 +19,8 @@ but there is functionality that is missing such as:
     - using fragments
     - separating concerns using viewModel
 
+This functionality is planned for the next version of the app.
+
 ---
 
 <center>
@@ -35,7 +37,8 @@ The classes used are:
 
 - ReminderDetails
 
-            This activity is reponsible for displaying the details of a reminder. it also has dynamically generated checkboxes for the amount of doses.
+            This activity is reponsible for displaying the details of a reminder.
+            it also has dynamically generated checkboxes for the amount of doses.
 
 - SplashActivity
 
@@ -47,32 +50,40 @@ The classes used are:
 
     - CustomerAdapter
 
-            The main page list adapter is implemented here, it is used to display the list of reminders.
+            The main page list adapter is implemented here,
+            it is used to display the list of reminders.
 
     - databaseAdapter
-      The Database logic is implemented here it has all the methods for the CRUD operations as well.
+
+            The Database logic is implemented here
+            it has all the methods for the CRUD operations as well.
 
   - Alarms
 
     - AlarmHelper
-      The Logic for the alarm creation and deletion(cancelation) is implemented here.
+
+            The Logic for the alarm creation and deletion(cancelation) is implemented here.
 
   - helperClasses
 
     - TimerToNextDose
 
             The logic for a concept timer is implemented here.
-            But the feature is not implemented in the application due to lack of time but it will bwe implemented in the future.
+            But the feature is not implemented in the application
+            due to lack of time but it will be implemented in the future.
 
     - Validation
 
-            The form validation logic is implemented here, this class takes care of the validation of both the create reminder form and the edit reminder form.
+            The form validation logic is implemented here,
+            this class takes care of the validation of both the create reminder form and the edit reminder form.
 
   - Notifications
 
     - Message
 
-            The Custom Toast methods are implemented here, this class is only responsible for showing a taost message using custom layout based on application needs.
+            The Custom Toast methods are implemented here,
+            this class is only responsible for showing a toast message using custom layout based
+            on application needs.
 
     - NotificationHelper
 
@@ -112,7 +123,9 @@ The classes used are:
 </center>
 
 The design of Medicine Reminder is made using custom widgets accompanied by material theming which also includes a dark mode that switches automatically based on system preferences.
+
 The application also has custom font included called nunito.
+
 All the designs are created by the author.
 
 ### Logo:
