@@ -38,7 +38,7 @@ The classes used are:
 
 - SplashActivity
 
-            This acttivity is responsible for the splashscreen while main activity is loading.
+            This activity is responsible for the splashscreen while main activity is loading.
 
 - with folders as follows:
 
