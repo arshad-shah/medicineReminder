@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.medicinereminder.helperClasses.Message;
-import com.example.medicinereminder.helperClasses.NotificationHelper;
+import com.example.medicinereminder.Notifications.NotificationHelper;
 
 public class ReminderReciever extends BroadcastReceiver {
 

@@ -1,4 +1,4 @@
-package com.example.medicinereminder.helperClasses;
+package com.example.medicinereminder.Notifications;
 
 import static android.app.Notification.VISIBILITY_PUBLIC;
 import android.app.Notification.Builder;
