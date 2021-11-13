@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 // create alarm thread and start it
                 AlarmThread newAlarmThread = new AlarmThread(MainActivity.this,name, dosesPerDay, daysToUse,true);
                 newAlarmThread.start();
+                alertDialog.cancel();
             }
         });
         cancelBtn.setOnClickListener(view -> {

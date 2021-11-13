@@ -20,14 +20,8 @@ public class Validation {
             medicineName.requestFocus();
             return false;
         }
-        int doses = Integer.parseInt(dosesInADay.getText().toString());
-        if (dosesInADay.length() == 0 && doses < 5) {
+        if (dosesInADay.length() == 0) {
             dosesInADay.setError("Doses per day is required");
-            dosesInADay.requestFocus();
-            return false;
-        }
-        else if (doses > 4){
-            dosesInADay.setError("Doses per day cannot exceed 4 in 24 hours");
             dosesInADay.requestFocus();
             return false;
         }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -185,7 +186,12 @@ public class ReminderDetails extends AppCompatActivity {
 
                     //generate checkboxes for the amount of doses per day
                     checkBoxGenerator(idReceived, dosesPerDayDisplay, numberOfDaysDisplay);
-                    AlarmThread renewAlarmThread = new AlarmThread(ReminderDetails.this,nameOfMedicineEditText, dosesPerDayEditText, numberOfDaysEditText,false);
+
+                    //get alarm object from database by medicine name using getAlarmData
+                    Alarm alarmByMedicineName = helper.getAlarmData(medicineNameReceived);
+
+                    //create an alarm with the updated values
+                    AlarmThread renewAlarmThread = new AlarmThread(ReminderDetails.this,alarmByMedicineName.getMedicineNameAlarm(),nameOfMedicineEditText, dosesPerDayEditText, numberOfDaysEditText,false);
                     renewAlarmThread.start();
                     dialog.dismiss();
                 }
