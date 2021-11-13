@@ -1,6 +1,4 @@
-<center>
-<h1>Medicine Reminder</h1>
-</center>
+<h1 align="center">Medicine Reminder</h1>
 
 Medicine reminder is a simple reminder app for medicine.
 
@@ -23,9 +21,7 @@ This functionality is planned for the next version of the app.
 
 ---
 
-<center>
-<h1>Structure</h1>
-</center>
+<h1  align="center">Structure</h1>
 
 The main structure of the app is divided into several subfolders to make it easier to navigate.
 
@@ -118,9 +114,7 @@ The classes used are:
 
 ---
 
-<center>
-<h1>Design</h1>
-</center>
+<h1 align="center">Design</h1>
 
 The design of Medicine Reminder is made using custom widgets accompanied by material theming which also includes a dark mode that switches automatically based on system preferences.
 
